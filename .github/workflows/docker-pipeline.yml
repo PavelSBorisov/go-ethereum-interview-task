@@ -83,3 +83,9 @@ jobs:
 
       - name: Stop and remove the geth-node container
         run: docker-compose -f docker-compose.yml down
+
+      - name: Run tests against the image with predeployed contracts
+        run: |
+          docker run -d --name predeployed-test-container ${{ secrets.DOCKER_USERNAME }}/go-ethereum-fork:deployed
+          docker exec predeployed-test-container sh -c "cd /hardhat && npx hardhat test"
+          docker stop predeployed-test-container && docker rm predeployed-test-container
