@@ -86,6 +86,6 @@ jobs:
 
       - name: Run tests against the image with predeployed contracts
         run: |
-          docker run -d --name predeployed-test-containerr ${{ secrets.DOCKER_USERNAME }}/go-ethereum-fork:deployed
-          docker exec predeployed-test-containerr sh -c "cd /hardhat && npx hardhat test"
-          docker stop predeployed-test-containerr && docker rm predeployed-test-containerr
+          docker run -d --name predeployed-test-container ${{ secrets.DOCKER_USERNAME }}/go-ethereum-fork:deployed
+          docker exec predeployed-test-container sh -c "cd /hardhat && npx hardhat test"
+          docker stop predeployed-test-container && docker rm predeployed-test-container
