@@ -10,7 +10,4 @@ npm install
 echo "Compiling, testing and deploying the contract..."
 npx hardhat compile
 npx hardhat test
-yes | npx hardhat ignition deploy ./ignition/modules/Lock.js --network local
-
-# Keep the container running
-tail -f /dev/null
+yes | npx hardhat ignition deploy ./ignition/modules/Lock.js --network local --verbose
