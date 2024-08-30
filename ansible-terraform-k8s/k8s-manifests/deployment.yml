@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: geth-hardhat-deployed
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: geth-hardhat
+  template:
+    metadata:
+      labels:
+        app: geth-hardhat
+    spec:
+      containers:
+      - name: geth-hardhat-deployed-container
+        image: pavelsborisov/go-ethereum-fork:deployed
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "250m"
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 8545

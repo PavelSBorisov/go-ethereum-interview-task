@@ -1,0 +1,44 @@
+---
+- name: Deploy GKE Cluster and Kubernetes Resources
+  hosts: localhost
+  tasks:
+    - name: Check if Terraform is installed
+      command: terraform --version
+      register: terraform_version
+      failed_when: terraform_version.rc != 0
+      ignore_errors: yes
+
+    - name: Fail if Terraform is not installed
+      fail:
+        msg: "Terraform is not installed. Please install Terraform and try again."
+      when: terraform_version.rc != 0
+
+    - name: Check if gcloud is installed
+      command: gcloud --version
+      register: gcloud_version
+      failed_when: gcloud_version.rc != 0
+      ignore_errors: yes
+
+    - name: Fail if gcloud is not installed
+      fail:
+        msg: "gcloud is not installed. Please install the Google Cloud SDK and try again."
+      when: gcloud_version.rc != 0
+
+    - name: Check if kubectl is installed
+      command: kubectl version --client
+      register: kubectl_version
+      failed_when: kubectl_version.rc != 0
+      ignore_errors: yes
+      
+    - name: Fail if kubectl is not installed
+      fail:
+        msg: "kubectl is not installed. Please install kubectl and try again."
+      when: kubectl_version.rc != 0
+
+    - name: Include GKE tasks
+      include_role:
+        name: gke
+
+    - name: Include Kubernetes tasks
+      include_role:
+        name: k8s
