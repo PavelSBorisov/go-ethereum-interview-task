@@ -1,0 +1,10 @@
+---
+- name: Initialize Terraform
+  command: terraform init
+  args:
+    chdir: "{{ playbook_dir }}/terraform"
+
+- name: Apply Terraform configuration
+  command: terraform apply -auto-approve # Any variables are passed in the terraform.tfvars file
+  args:
+    chdir: "{{ playbook_dir }}/terraform"

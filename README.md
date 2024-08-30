@@ -1,3 +1,47 @@
+# [Limechain] Pavel Borisov DevOps Take Home Task
+
+## Description
+This part of the README serves as a high-level outline of the solution.
+
+## [docker-pipeline.yml](.github/workflows/docker-pipeline.yml) workflow
+The pipeline is triggered upon closing a PR and each job performs a check to run only if the PR was merged and if it contains a specific label.
+
+### CI:Build job
+This job checks out the repository, builds a geth image using the available Dockerfile (with a slight modification to install nodejs npm) and pushes it to a public [Docker Hub registry](https://hub.docker.com/r/pavelsborisov/go-ethereum-fork) with the `latest` tag.
+
+### [docker-compose.yml](docker-compose.yml)
+The docker-compose file runs a local geth devnet using the image tagged `latest` pushed to the public [Docker Hub registry](https://hub.docker.com/r/pavelsborisov/go-ethereum-fork).
+
+### Sample hardhat project
+The [hardhat directory](hardhat) contains a sample hardhat project created using hardhat init with some small modifications to [hardhat.config.js](hardhat/hardhat.config.js) to allow for the deployment of the contract on the local geth devnet - mainly the network and number of confirmations.
+
+### CI:Deploy job
+This job checks out the repository, installs the necessary dependencies and runs a geth-node container in daemon mode using docker-compose.
+
+It then copies the entrypoint script and hardhat directory to the container - I chose this approach instead of mounting them as volumes to ensure consistent results and a "start from scratch" state if the commands are run locally for testing and validation (the alternative modifies the files on the parent host volume).
+
+#### entrypoint.sh - the entrypoint script changes the workdir to /hardhat in the container, installs dependencies, compiles and tests the contract and finally deploys it locally on the devnet.
+
+The job then continues by committing the changes in the contianer to a new image tagged `deployed` and pushes it to the [Docker Hub registry](https://hub.docker.com/r/pavelsborisov/go-ethereum-fork) after which it stops the container.
+
+The final step is to run a new container with the image tagged `deployed` and run the hardhat tests again.
+
+## Ansible-Terraform-Kubernetes
+The [ansible-terraform-k8s](ansible-terraform-k8s) directory contains the following:
+
+### Terraform:
+A simple Terraform setup that deploys a free-tier autopilot Kubernetes cluster in GKE - 
+
+I chose this platform and type of cluster because GCP was the best cloud provider that offers Kubernetes in their free tier and the autopilot mode was the most fitting solution for the task of "quickly" deploying the cluster with the least management overhead
+
+### Kubernetes manifest:
+A simple deployment with 1 pod utilizing the newly built image tagged `deployed` from the [Docker Hub registry](https://hub.docker.com/r/pavelsborisov/go-ethereum-fork).
+
+### Ansible deployment script:
+An ansible playbook to streamline the deployment of the above resources.
+
+It checks if the necessary dependencies are installed, runs terraform init and apply, after which it deploys the deployment and pod using kubectl.
+
 ## Go Ethereum
 
 Golang execution layer implementation of the Ethereum protocol.
