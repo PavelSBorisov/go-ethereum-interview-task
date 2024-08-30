@@ -42,6 +42,11 @@ An ansible playbook to streamline the deployment of the above resources.
 
 It checks if the necessary dependencies are installed, runs terraform init and apply, after which it deploys the deployment and pod using kubectl.
 
+### Testing:
+If you want to test this on your GCP project, make sure to add the necessary variables in terraform.tfvars and run the following command while inside the [ansible-terraform-k8s](ansible-terraform-k8s) direcotry:
+
+`ansible-playbook ansible_deploy.yml --extra-vars "region=<your-region> project_id=<your-project-id>"`
+
 ## Go Ethereum
 
 Golang execution layer implementation of the Ethereum protocol.
